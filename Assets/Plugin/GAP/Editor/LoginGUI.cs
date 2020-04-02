@@ -46,9 +46,13 @@ namespace Assets.Plugins.GAP.Editor
                 {
                     GitHubConnection client = new GitHubConnection(username, password);
                 }
-                catch(Exception exc)
+                catch (Exception exc)
                 {
                     Debug.Log(exc);
+                }
+                if (PlayerPrefs.GetString("accessToken") != null)
+                {
+                    this.Close();
                 }
             }
         }

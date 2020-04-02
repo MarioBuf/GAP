@@ -50,6 +50,10 @@ namespace Assets.Plugins.GAP.Editor
                 window = new GUI(this.info);
             } else
             {
+                PlayerPrefs.DeleteKey("id");
+                PlayerPrefs.DeleteKey("username");
+                PlayerPrefs.DeleteKey("accessToken");
+                PlayerPrefs.DeleteKey("ownerRepository");
                 new Login();
             }
         }

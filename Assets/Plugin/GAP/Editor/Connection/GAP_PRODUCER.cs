@@ -21,11 +21,7 @@ namespace Assets.Plugins.GAP.Connection
 
         public void startProducer()
         {
-            if (!PlayerPrefs.HasKey("tipoConnessione"))
-            {
-                this.options = new KafkaOptions(new Uri("http://kafkaserver.eu.ngrok.io:80"), new Uri("http://kafkaserver.eu.ngrok.io:80"));
-            }
-            else if (PlayerPrefs.GetInt("tipoConnessione") == 0)
+            if (PlayerPrefs.GetInt("tipoConnessione") == 0)
             {
                 this.options = new KafkaOptions(new Uri(PlayerPrefs.GetString("ipAddress")));
             }

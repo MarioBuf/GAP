@@ -23,12 +23,7 @@ namespace Assets.Plugins.GAP.Connection
                 string risultati = null;
                 Dictionary<String, String> messaggi = new Dictionary<string, string>();
                 //Caso di default
-                if (!PlayerPrefs.HasKey("tipoConnessione"))
-                {
-                    webClient.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; " + "Windows NT 5.2; .NET CLR 1.0.3705;)");
-                    risultati = webClient.DownloadString("http://kafkaserver.eu.ngrok.io:80/kafka/consumer");
-                    messaggi = JsonConvert.DeserializeObject<Dictionary<String, String>>(risultati);
-                } else if(PlayerPrefs.GetInt("tipoConnessione")==0)
+                if(PlayerPrefs.GetInt("tipoConnessione")==0)
                 {
                     webClient.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; " + "Windows NT 5.2; .NET CLR 1.0.3705;)");
                     risultati = webClient.DownloadString(PlayerPrefs.GetString("ipAddress"));
@@ -51,7 +46,17 @@ namespace Assets.Plugins.GAP.Connection
                     {
                         foreach (var messaggio in messaggi)
                         {
-                            String[] dtsplit = messaggio.Value.Split('-', ':', '.');
+                            String[] message = null;
+                            String[] dtsplit = null;
+                            if (PlayerPrefs.GetInt("tipoConnessione") == 1)
+                            {
+                                string[] separatingStrings = { "_:_" };
+                                message = messaggio.Value.Split(separatingStrings, StringSplitOptions.RemoveEmptyEntries);
+                                dtsplit=message[1].Split('-', ':', '.');
+                            } else
+                            {
+                                dtsplit = messaggio.Value.Split('-', ':', '.');
+                            }
                             var date = DateTime.Now - new DateTime(int.Parse(dtsplit[2]), int.Parse(dtsplit[1]), int.Parse(dtsplit[0]), int.Parse(dtsplit[3]), int.Parse(dtsplit[4]), int.Parse(dtsplit[5]));
                             List<String> listOnline = new List<String>();
                             if (double.Parse(date.TotalDays.ToString()) < 1)

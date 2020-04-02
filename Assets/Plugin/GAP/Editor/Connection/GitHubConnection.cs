@@ -21,6 +21,7 @@ namespace Assets.Plugins.GAP.Connection
 
     public class GitHubConnection
     {
+        
         public GitHubConnection()
         {}
 
@@ -72,20 +73,11 @@ namespace Assets.Plugins.GAP.Connection
                 foreach (var item in authorizations)
                 {
                     if (item.app._name.CompareTo("GAP") == 0)
-                    { 
-                        using(var _client=new HttpClient())
-                        {
-                            _client.BaseAddress = new Uri("https://api.github.com/");
-                            var _response = _client.DeleteAsync("authorizations/" + item.id).Result;
-                            if (_response.IsSuccessStatusCode)
-                            {
-                                Debug.Log("Success");
-                            } else
-                            {
-                                Debug.Log("Error");
-                            }
-                        }
-                        //client.UploadValues("https://api.github.com/authorizations/" + item.id, "DELETE", new NameValueCollection());
+                    {
+                        Debug.Log("CIAOOOO");
+                        GitHubClient n = new GitHubClient(new ProductHeaderValue("GAP"));
+                        n.Credentials = new Credentials(username, password);
+                        var task=n.Authorization.Delete(item.id);
                     }
                 }
             }
@@ -156,7 +148,7 @@ namespace Assets.Plugins.GAP.Connection
             }
             catch (Exception exc)
             {
-                Debug.Log(exc);
+                Debug.Log("setAccessToken"+exc);
             }
         }
 
