@@ -1,2 +1,2 @@
 # GAP
-Ciao
+Test generico
