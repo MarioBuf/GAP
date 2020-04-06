@@ -1,4 +1,2 @@
 # GAP
 test
-ciao
-asd
