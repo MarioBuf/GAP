@@ -1,4 +1,3 @@
 # GAP
 test
-asd
 ssw
