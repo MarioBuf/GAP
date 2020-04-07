@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Plugin.GAP.Editor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,11 +49,10 @@ namespace Assets.Plugins.GAP.Editor
             {
                 if(ipAddress.Equals(""))
                 {
-                    Debug.Log(ipAddress);
-                    new messageAlert("IpAddress/Hostname mancante");
+                    new messageAlert(null, "IpAddress/Hostname mancante");
                 } else if(port.Equals("") && index!=1)
                 {
-                    new messageAlert("Porta mancante");
+                    new messageAlert(null, "Porta mancante");
                 } else
                 {
                     PlayerPrefs.SetInt("tipoConnessione", index);
@@ -60,35 +60,6 @@ namespace Assets.Plugins.GAP.Editor
                     PlayerPrefs.SetString("porta", port);
                     this.Close();
                 }
-            }
-        }
-    }
-
-    public class messageAlert: EditorWindow
-    {
-        private string message;
-        public messageAlert(string message)
-        {
-            this.message = message;
-            messageAlert window = GetWindow<messageAlert>();
-            window.title = "Errore";
-            window.Show();
-        }
-        public static void Init()
-        { }
-
-        void OnDestroy()
-        { }
-
-        void OnEnable()
-        { }
-
-        void OnGUI()
-        {
-            EditorGUILayout.LabelField(this.message);
-            if (GUILayout.Button("OK"))
-            {
-                this.Close();
             }
         }
     }

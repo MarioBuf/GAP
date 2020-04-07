@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿#pragma warning(push, 0)
+using Newtonsoft.Json;
 using UnityEngine;
+#pragma warning(pop)
 
 namespace Assets.Plugins.GAP.Editor.Users
 {
@@ -23,6 +25,13 @@ namespace Assets.Plugins.GAP.Editor.Users
         public string received_events_url { get; set; }
         public string type { get; set; }
         public string site_admin { get; set; }
+    }
+
+    public class permissions : ScriptableObject
+    {
+        public bool admin { get; set; }
+        public bool push { get; set; }
+        public bool pull { get; set; }
     }
 
     public class Repository : ScriptableObject
@@ -103,14 +112,7 @@ namespace Assets.Plugins.GAP.Editor.Users
         public int open_issues { get; set; }
         public int watchers { get; set; }
         public string default_branch { get; set; }
-        public struct permissions {
-            public bool admin { get; set; }
-            public bool push { get; set; }
-            public bool pull { get; set; }
-        }
-
-        public string getLogin() {
-            return owner.login;
-        }
+        [JsonProperty("permissions")]
+        public permissions _permissions { get; set; }
     }
 }

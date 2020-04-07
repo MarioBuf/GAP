@@ -18,6 +18,7 @@ namespace Assets.Plugins.GAP.Connection
     using Assets.Plugins.GAP.Editor.Users;
     using Assets.Plugins.GAP.Editor.Connection;
     using System.Collections.Specialized;
+    using Assets.Plugin.GAP.Editor.Users;
 
     public class GitHubConnection
     {
@@ -44,14 +45,17 @@ namespace Assets.Plugins.GAP.Connection
                 webClient.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; " + "Windows NT 5.2; .NET CLR 1.0.3705;)");
                 webClient.Headers.Add("Authorization", "Token " + PlayerPrefs.GetString("accessToken"));
                 var risultati = webClient.DownloadString("https://api.github.com/user/repos");
-                List<Repository> repositories = JsonConvert.DeserializeObject<List<Repository>>(risultati);
-                foreach(var repository in repositories)
+                string[] separatingStrings = { "[{\"", "\":\"", "\",\"", ",\"", "\",\"", "}}]", "}},{", "\":", "\":{\"", ",\"", "\"" };
+                String[] lista = risultati.Split(separatingStrings, StringSplitOptions.RemoveEmptyEntries);
+                var dp = UnityEngine.Application.dataPath;
+                var s = dp.Split('/');
+                String[] ownerT = null;
+                for (int i=0; i<lista.Length; ++i)
                 {
-                    var dp = UnityEngine.Application.dataPath;
-                    var s = dp.Split('/');
-                    if (repository._name.CompareTo(s[s.Length - 2].ToString())==0)
+                    if(lista[i].CompareTo(s[s.Length - 2].ToString())==0)
                     {
-                        PlayerPrefs.SetString("ownerRepository", repository.owner.login);
+                        ownerT = lista[i + 2].Split('/');
+                        PlayerPrefs.SetString("ownerRepository", ownerT[0]);
                     }
                 }
             } catch (Exception exc)
@@ -74,7 +78,6 @@ namespace Assets.Plugins.GAP.Connection
                 {
                     if (item.app._name.CompareTo("GAP") == 0)
                     {
-                        Debug.Log("CIAOOOO");
                         GitHubClient n = new GitHubClient(new ProductHeaderValue("GAP"));
                         n.Credentials = new Credentials(username, password);
                         var task=n.Authorization.Delete(item.id);
@@ -96,6 +99,7 @@ namespace Assets.Plugins.GAP.Connection
                     var risultati = webClient.DownloadString("https://api.github.com/user");
                     if (risultati.Contains("Bad credentials"))
                     {
+                        PlayerPrefs.SetString("accessToken", null);
                         control = false;
                     }
                     else
@@ -140,7 +144,6 @@ namespace Assets.Plugins.GAP.Connection
                     scope.Add("workflow");
                     scope.Add("admin:gpg_key");
                     webClient.Credentials = new Credentials(username, password);
-                    //this.client.Credentials = new Credentials(username, password);
                     Task<ApplicationAuthorization> accessToken = webClient.Authorization.Create(new NewAuthorization("GAP", scope));
                     PlayerPrefs.SetString("accessToken", accessToken.Result.Token);
                     PlayerPrefs.SetString("username", username);
@@ -164,7 +167,6 @@ namespace Assets.Plugins.GAP.Connection
                 var risultati = webClient.DownloadString("https://api.github.com/repos/" + PlayerPrefs.GetString("username") + "/" + s[s.Length - 2].ToString() + "/collaborators");
                 List<Collaborator> lista = JsonConvert.DeserializeObject<List<Collaborator>>(risultati);
                 ListaCollaboratori listaCollaboratori=new ListaCollaboratori();
-
                 foreach (var collaboratore in lista)
                 {
                     if(collaboratore.login.CompareTo(PlayerPrefs.GetString("username"))!=0)
@@ -186,17 +188,10 @@ namespace Assets.Plugins.GAP.Connection
             }
         }
 
-        public class _info
-        {
-            public string username { get; set; }
-            public string lastActionDone { get; set; }
-            public string whenDidLastAction { get; set; }
-        }
-
-        public List<_info> getInfoAction()
+        public Lista_info getInfoAction()
         {
             List<Event> eventi;
-            List<_info> listaUtenti = new List<_info>();
+            Lista_info listaUtenti = new Lista_info();
             WebClient webClient = new WebClient();
             try
             {
@@ -212,9 +207,9 @@ namespace Assets.Plugins.GAP.Connection
                 foreach (var evento in eventi)
                 {
                     check = false;
-                    for (int i=0; i<listaUtenti.Count; ++i)
+                    for (int i=0; i<listaUtenti.lista_info.Count; ++i)
                     {
-                        if (listaUtenti.ToArray()[i].username.CompareTo(evento.actor.login) == 0)
+                        if (listaUtenti.lista_info[i].username.CompareTo(evento.actor.login) == 0)
                         {
                             check = true;
                         }
@@ -270,7 +265,7 @@ namespace Assets.Plugins.GAP.Connection
                         info.username = evento.actor.login;
                         info.whenDidLastAction = whenDidLastAction;
                         info.lastActionDone = lastActionDone;
-                        listaUtenti.Add(info);
+                        listaUtenti.lista_info.Add(info);
                     }
                 }
                 return listaUtenti;

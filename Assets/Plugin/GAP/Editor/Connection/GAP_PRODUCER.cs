@@ -27,14 +27,14 @@ namespace Assets.Plugins.GAP.Connection
             }
             else if (PlayerPrefs.GetInt("tipoConnessione") == 1)
             {
-                this.options = new KafkaOptions(new Uri(PlayerPrefs.GetString("ipAddress") + PlayerPrefs.GetString("porta")));
+                this.options = new KafkaOptions(new Uri(PlayerPrefs.GetString("ipAddress") + ":"+PlayerPrefs.GetString("porta")));
             }
             this.router = new BrokerRouter(options);
             this.client = new Producer(router);
             var topics=this.router.GetTopicMetadata();
         }
 
-        public void sendMessage(String username)//(string message, string topic)
+        public void sendMessage(String username)
         {
             WebClient webClient = new WebClient();
             try
@@ -44,13 +44,10 @@ namespace Assets.Plugins.GAP.Connection
                 webClient.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; " + "Windows NT 5.2; .NET CLR 1.0.3705;)");
                 string messaggio = username + "_:_" + data[0] + "-" + data[1] + "-" + data[2] + ":" + data[3] + "." + data[4] + "." + data[5];
                 byte[] risultati = null;
-                if (!PlayerPrefs.HasKey("tipoConnessione"))
-                {
-                    risultati = webClient.DownloadData("http://kafkaserver.eu.ngrok.io:80/kafka/producer?message=" + messaggio);
-                } else if(PlayerPrefs.GetInt("tipoConnessione") == 0)
+                if(PlayerPrefs.GetInt("tipoConnessione") == 0)
                 {
                     risultati = webClient.DownloadData(PlayerPrefs.GetString("ipAddress"));
-                } else
+                } else if(PlayerPrefs.GetInt("tipoConnessione") == 1)
                 {
                     var options = new KafkaOptions(new Uri(PlayerPrefs.GetString("ipAddress")+ PlayerPrefs.GetString("porta")));
                     var router = new BrokerRouter(options);

@@ -79,8 +79,11 @@
     <Compile Include="Assets\Plugin\GAP\Editor\Users\Info.cs" />
     <Compile Include="Assets\Plugin\GAP\Editor\Users\InfoUser.cs" />
     <Compile Include="Assets\Plugin\GAP\Editor\Users\ListaCollaboratori.cs" />
+    <Compile Include="Assets\Plugin\GAP\Editor\Users\Lista_info.cs" />
     <Compile Include="Assets\Plugin\GAP\Editor\Users\Repository.cs" />
+    <Compile Include="Assets\Plugin\GAP\Editor\Users\_info.cs" />
     <Compile Include="Assets\Plugin\GAP\Editor\Users\imgn.cs" />
+    <Compile Include="Assets\Plugin\GAP\Editor\messageAlert.cs" />
     <Reference Include="UnityEditor.TestRunner">
       <HintPath>C:/Users/BUFFELLIM/Documents/GAP/Library/ScriptAssemblies/UnityEditor.TestRunner.dll</HintPath>
     </Reference>

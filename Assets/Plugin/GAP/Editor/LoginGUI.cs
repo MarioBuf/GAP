@@ -4,6 +4,7 @@ using UnityEngine;
 using Octokit;
 using Assets.Plugins.GAP.Connection;
 using System.Security.Permissions;
+using Assets.Plugin.GAP.Editor;
 
 namespace Assets.Plugins.GAP.Editor
 {
@@ -50,9 +51,14 @@ namespace Assets.Plugins.GAP.Editor
                 {
                     Debug.Log(exc);
                 }
-                if (PlayerPrefs.GetString("accessToken") != null)
+                Debug.Log(PlayerPrefs.GetString("accessToken"));
+                if (PlayerPrefs.GetString("accessToken") != null && PlayerPrefs.GetString("accessToken").CompareTo("") != 0)
                 {
+                    messageAlert alert=new messageAlert(this, "Login Effettuato");
                     this.Close();
+                } else
+                {
+                    messageAlert alert = new messageAlert(null, "Credenziali non valide");
                 }
             }
         }

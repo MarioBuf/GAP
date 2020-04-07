@@ -1,4 +1,5 @@
-﻿using Assets.Plugins.GAP.Connection;
+﻿using Assets.Plugin.GAP.Editor.Users;
+using Assets.Plugins.GAP.Connection;
 using Assets.Plugins.GAP.Editor.Connection;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,17 @@ namespace Assets.Plugins.GAP.Editor.Users
                         control = true;
                     else
                         control = false;
+                    var infoActions = this.account.getInfoAction();
+                    foreach (var infoA in infoActions.lista_info)
+                    {
+                        foreach(var collaboratore in this.collaborators.listaCollaboratori)
+                        {
+                            if(collaboratore.user.login.CompareTo(infoA.username) == 0)
+                            {
+                                this.collaborators.updateUser(infoA.username, infoA.lastActionDone, infoA.whenDidLastAction);
+                            }
+                        }
+                    }
                 } catch(Exception exc)
                 {
                     control = false;
@@ -47,16 +59,16 @@ namespace Assets.Plugins.GAP.Editor.Users
 
         public void updateInfoCollaborators()
         {
-            List<_info> listaInfo = new List<_info>();
+            Lista_info listaInfo = new Lista_info();
             listaInfo = this.account.getInfoAction();
             for (int i=0; i<collaborators.numberCollaborators(); ++i)
             {
-                for (int y=0; y<listaInfo.Count; ++y)
+                for (int y=0; y<listaInfo.lista_info.Count; ++y)
                 {
-                    if (collaborators.getUserByIndex(i).user.login.CompareTo(listaInfo.ToArray()[y].username)==0)
+                    if (collaborators.getUserByIndex(i).user.login.CompareTo(listaInfo.lista_info[y].username)==0)
                     {
                         //InfoUser infoUser = new InfoUser(collaborators.getUserByIndex(i).user, elemento.lastActionDone, elemento.whenDidLastAction, item.status);
-                        collaborators.updateUser(listaInfo.ToArray()[y].username, listaInfo.ToArray()[y].lastActionDone, listaInfo.ToArray()[y].whenDidLastAction);
+                        collaborators.updateUser(listaInfo.lista_info[y].username, listaInfo.lista_info[y].lastActionDone, listaInfo.lista_info[y].whenDidLastAction);
                     }
                 }
             }

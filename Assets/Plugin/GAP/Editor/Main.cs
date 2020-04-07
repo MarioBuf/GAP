@@ -1,9 +1,12 @@
-﻿using Unity;
+﻿#pragma warning(push, 0)
+using Unity;
 using UnityEngine;
 using UnityEditor;
+#pragma warning(pop)
 
 namespace Assets.Plugins.GAP.Editor
 {
+    using Assets.Plugin.GAP.Editor;
     using Assets.Plugins.GAP.Connection;
     using Assets.Plugins.GAP.Editor.Users;
     using Connection;
@@ -47,7 +50,14 @@ namespace Assets.Plugins.GAP.Editor
 
             if (control)
             {
-                window = new GUI(this.info);
+                if (PlayerPrefs.HasKey("tipoConnessione"))
+                {
+                    window = new GUI(this.info);
+                } else
+                {
+                    new messageAlert(null, "E' necessario configurare la connessione ad Apache Kafka");
+                    new KafkaConnectionConfiguration();
+                }
             } else
             {
                 PlayerPrefs.DeleteKey("id");

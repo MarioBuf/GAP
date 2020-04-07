@@ -57,6 +57,7 @@ namespace Assets.Plugins.GAP.Editor.Users
                     this.listaCollaboratori[index].status = false;
                 }
             }
+
         }
 
         public bool ifExist(string username)
