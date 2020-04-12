@@ -12,6 +12,9 @@ using Assets.Plugin.GAP.Editor.Users;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using Newtonsoft.Json;
+using KafkaNet.Model;
+using KafkaNet;
+using KafkaNet.Protocol;
 #pragma warning(pop)
 
 namespace Assets.Plugins.GAP.Editor
@@ -40,9 +43,9 @@ namespace Assets.Plugins.GAP.Editor
         String username;
 
         //Altro
-        GAP_CONSUMER consumer;
-        GAP_PRODUCER producer;
-        private bool kafkaOk = true;
+        //GAP_CONSUMER consumer;
+        //GAP_PRODUCER producer;
+        private bool kafkaOk = false;
         List<String> lista = new List<String>();
         Thread thread;
         bool isAlive = true;
@@ -56,6 +59,9 @@ namespace Assets.Plugins.GAP.Editor
         private string ownerRepository;
         private string accessToken;
         private string dataPath;
+        private int kindConnection = 99;
+        private string ipAddress = null;
+        private string porta = null;
 
         void IHasCustomMenu.AddItemsToMenu(GenericMenu menu)
         {
@@ -77,9 +83,17 @@ namespace Assets.Plugins.GAP.Editor
             window.title = "GAP";
             this.username = PlayerPrefs.GetString("username");
             this.ownerRepository = PlayerPrefs.GetString("ownerRepository");
-            Debug.Log("OWNER_REPOSITORY FROM GUI(): "+this.ownerRepository);
             this.accessToken = PlayerPrefs.GetString("accessToken");
 
+            if(PlayerPrefs.HasKey("tipoConnessione"))
+            {
+                this.kindConnection = PlayerPrefs.GetInt("tipoConnessione");
+            }
+            this.ipAddress = PlayerPrefs.GetString("ipAddress");
+            if(PlayerPrefs.HasKey("porta"))
+            {
+                this.porta = PlayerPrefs.GetString("porta");
+            }
             ShowWindow();
         }
 
@@ -95,13 +109,11 @@ namespace Assets.Plugins.GAP.Editor
             public string whenDidLastActionDone { get; set; }
         }
 
-
         public GUI(Info info)
         {
             this.dataPath = UnityEngine.Application.dataPath;
             this.ownerRepository = PlayerPrefs.GetString("ownerRepository");
             this.accessToken = PlayerPrefs.GetString("accessToken");
-            Debug.Log("OWNER_REPOSITORY FROM GUI(info): " + this.ownerRepository);
             this.isAlive = true;
             this.info = new Info();
             this.info=info;
@@ -125,6 +137,12 @@ namespace Assets.Plugins.GAP.Editor
                     avatarUsers.Add(Av);
                 }
             }
+            if (PlayerPrefs.HasKey("tipoConnessione"))
+            {
+                this.kindConnection = PlayerPrefs.GetInt("tipoConnessione");
+            }
+            this.ipAddress = PlayerPrefs.GetString("ipAddress");
+            this.porta = PlayerPrefs.GetString("porta");
             window.Show(true);
         }
 
@@ -161,7 +179,6 @@ namespace Assets.Plugins.GAP.Editor
                       }
                       if (!this.kafkaWorker.IsBusy)
                       {
-                          Thread.Sleep(1000);
                           kafkaWorker.CancelAsync();
                           Thread.Sleep(1000);
                           kafkaWorker.RunWorkerAsync();
@@ -173,26 +190,117 @@ namespace Assets.Plugins.GAP.Editor
 
         void kafkaWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            try
+            if(this.kindConnection!=99)
             {
-                Debug.Log(this.kafkaOk);
-                this.consumer = new GAP_CONSUMER();
-                this.producer = new GAP_PRODUCER();
-
-                producer.sendMessage(this.username);
-                List<String> lista = consumer.controlWhoIsOnline();
-                if (lista != null)
+                try
                 {
-                    if (lista.Count != 0)
+                    this.kafkaOk = true;
+
+                    //Invio status online al server Kafka
+                    WebClient webClient = new WebClient();
+                    try
                     {
-                        this.info.collaborators.updateUsersStatusMassive(lista);
+                        char[] chars = { '-', 'T', ':', 'Z', ' ', '/' };
+                        string[] data = DateTime.Now.ToString().Split(chars, StringSplitOptions.None);
+                        webClient.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; " + "Windows NT 5.2; .NET CLR 1.0.3705;)");
+
+                        string messaggio = username + "_:_" + data[0] + "-" + data[1] + "-" + data[2] + ":" + data[3] + "." + data[4] + "." + data[5];
+                        if (this.kindConnection == 0)
+                        {
+                            webClient.DownloadString(new Uri("http://" + this.ipAddress + "/kafka/producer?message=" + messaggio));
+                        }
+                        else if (this.kindConnection == 1)
+                        {
+                            KafkaOptions options = new KafkaOptions();
+                            options = new KafkaOptions(new Uri(this.ipAddress + ":" + this.porta));
+                            BrokerRouter router = new BrokerRouter(options);
+                            Producer client = new Producer(router);
+                            router = new BrokerRouter(options);
+                            client = new Producer(router);
+                            client.SendMessageAsync("status", new[] { new Message(messaggio) }).Wait();
+                        }
                     }
+                    catch (Exception exc)
+                    {
+                        this.kafkaOk = false;
+                        Debug.Log("Errore producer: " + exc);
+                    }
+
+                    //Lettura status dal server online
+                    List<String> lista = new List<string>();
+                    try
+                    {
+                        string risultati = null;
+                        Dictionary<String, String> messaggi = new Dictionary<string, string>();
+                        //Caso di default
+                        if (this.kindConnection == 0)
+                        {
+                            webClient.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; " + "Windows NT 5.2; .NET CLR 1.0.3705;)");
+                            risultati = webClient.DownloadString(new Uri("http://" + this.ipAddress + "/kafka/consumer"));
+                            messaggi = JsonConvert.DeserializeObject<Dictionary<String, String>>(risultati);
+                        }
+                        else if (this.kindConnection == 1)
+                        {
+                            KafkaOptions options = new KafkaOptions();
+                            options = new KafkaOptions(new Uri(this.ipAddress + ":" + this.porta));
+                            BrokerRouter router = new BrokerRouter(options);
+                            Consumer consumer = new Consumer(new ConsumerOptions("status", router));
+                            foreach (var message in consumer.Consume())
+                            {
+                                string[] _message = message.ToString().Split('/');
+                                messaggi.Add(_message[0], _message[1]);
+                            }
+                        }
+
+                        if (messaggi != null)
+                        {
+                            if (messaggi.Count > 0)
+                            {
+                                foreach (var messaggio in messaggi)
+                                {
+                                    String[] message = null;
+                                    String[] dtsplit = null;
+                                    if (this.kindConnection == 1)
+                                    {
+                                        string[] separatingStrings = { "_:_" };
+                                        message = messaggio.Value.Split(separatingStrings, StringSplitOptions.RemoveEmptyEntries);
+                                        dtsplit = message[1].Split('-', ':', '.');
+                                    }
+                                    else
+                                    {
+                                        dtsplit = messaggio.Value.Split('-', ':', '.');
+                                    }
+                                    var date = DateTime.Now - new DateTime(int.Parse(dtsplit[2]), int.Parse(dtsplit[1]), int.Parse(dtsplit[0]), int.Parse(dtsplit[3]), int.Parse(dtsplit[4]), int.Parse(dtsplit[5]));
+                                    List<String> listOnline = new List<String>();
+                                    if (double.Parse(date.TotalDays.ToString()) < 1)
+                                    {
+                                        if (double.Parse(date.TotalHours.ToString()) < 1)
+                                        {
+                                            if (double.Parse(date.TotalMinutes.ToString()) < 1)
+                                            {
+                                                if (double.Parse(date.TotalSeconds.ToString()) < 8)
+                                                {
+                                                    listOnline.Add(messaggio.Key);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception exc)
+                    {
+                        this.kafkaOk = false;
+                        Debug.Log("Errore consumer: "+exc);
+                    }
+                    kafkaWorker.ReportProgress(0, lista);
                 }
-                this.kafkaOk = true;
-                kafkaWorker.ReportProgress(0, lista);
-            }
-            catch (Exception exc) {
-                this.kafkaOk = false;
+                catch (Exception exc)
+                {
+                    Debug.Log("Errore: " + exc.Message);
+                    this.kafkaOk = false;
+                }
             }
         }
 
@@ -215,25 +323,7 @@ namespace Assets.Plugins.GAP.Editor
             List<temp_info> listaUtenti = new List<temp_info>();
             List<String> usersChecked = new List<string>();
             WebClient webClient = new WebClient();
-            try
-            {
 
-                this.window.producer.sendMessage(this.username);
-                this.window.lista = consumer.controlWhoIsOnline();
-                if (this.window.lista != null)
-                {
-                    if (this.window.lista.Count != 0)
-                    {
-                        this.window.info.collaborators.updateUsersStatusMassive(lista);
-                    }
-                }
-            }
-            catch (Exception exc)
-            { }
-            eventi = new List<temp_info>();
-            listaUtenti = new List<temp_info>();
-            usersChecked = new List<string>();
-            webClient = new WebClient();
             temp_info info_1 = new temp_info();
             try
             {

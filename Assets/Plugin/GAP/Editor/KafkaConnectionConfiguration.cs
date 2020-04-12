@@ -44,13 +44,15 @@ namespace Assets.Plugins.GAP.Editor
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.LabelField("Scegli il tipo di connessione con Apache Kafka:");
-            index = EditorGUILayout.Popup(index, new string[] { "REST API", "Connessione diretta" });
+            index = EditorGUILayout.Popup(index, new string[] { "Kafka-Connect", "Connessione diretta" });
             if (GUILayout.Button("Connetti"))
             {
-                if(ipAddress.Equals(""))
+
+                Debug.Log(index);
+                if (ipAddress.Equals(""))
                 {
                     new messageAlert(null, "IpAddress/Hostname mancante");
-                } else if(port.Equals("") && index!=1)
+                } else if(port.Equals("") && index==1)
                 {
                     new messageAlert(null, "Porta mancante");
                 } else

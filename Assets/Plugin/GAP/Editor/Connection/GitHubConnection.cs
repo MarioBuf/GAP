@@ -56,7 +56,6 @@ namespace Assets.Plugins.GAP.Connection
                     {
                         ownerT = lista[i + 2].Split('/');
                         PlayerPrefs.SetString("ownerRepository", ownerT[0]);
-                        Debug.Log("OWNER_REPOSITORY: " + ownerT[0]);
                     }
                 }
             } catch (Exception exc)
