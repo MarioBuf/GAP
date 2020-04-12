@@ -180,8 +180,7 @@ namespace Assets.Plugins.GAP.Editor
                 this.producer = new GAP_PRODUCER();
 
                 producer.sendMessage(this.username);
-                Thread.Sleep(500);
-                this.lista = consumer.controlWhoIsOnline();
+                List<String> lista = consumer.controlWhoIsOnline();
                 if (lista != null)
                 {
                     if (lista.Count != 0)
@@ -190,7 +189,7 @@ namespace Assets.Plugins.GAP.Editor
                     }
                 }
                 this.kafkaOk = true;
-                Thread.Sleep(1500);
+                kafkaWorker.ReportProgress(0, lista);
             }
             catch (Exception exc) {
                 this.kafkaOk = false;
@@ -199,7 +198,7 @@ namespace Assets.Plugins.GAP.Editor
 
         void kafkaWorker_progressChanged(object sender, ProgressChangedEventArgs e)
         {
-
+            this.info.collaborators.updateUsersStatusMassive((List<String>) e.UserState);
         }
 
         void kafkaWorker_workCompeted(object sender, RunWorkerCompletedEventArgs e)
