@@ -42,6 +42,7 @@ namespace Assets.Plugins.GAP.Editor
             if (this.info.account.checkValidateInfo())
             {
                 this.info.setInfo();
+                this.info.account.getInfoAction();
             }
             else
             {

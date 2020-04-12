@@ -77,6 +77,7 @@ namespace Assets.Plugins.GAP.Editor
             window.title = "GAP";
             this.username = PlayerPrefs.GetString("username");
             this.ownerRepository = PlayerPrefs.GetString("ownerRepository");
+            Debug.Log("OWNER_REPOSITORY FROM GUI(): "+this.ownerRepository);
             this.accessToken = PlayerPrefs.GetString("accessToken");
 
             ShowWindow();
@@ -100,6 +101,7 @@ namespace Assets.Plugins.GAP.Editor
             this.dataPath = UnityEngine.Application.dataPath;
             this.ownerRepository = PlayerPrefs.GetString("ownerRepository");
             this.accessToken = PlayerPrefs.GetString("accessToken");
+            Debug.Log("OWNER_REPOSITORY FROM GUI(info): " + this.ownerRepository);
             this.isAlive = true;
             this.info = new Info();
             this.info=info;
@@ -107,6 +109,7 @@ namespace Assets.Plugins.GAP.Editor
             this.window = (GUI)EditorWindow.GetWindow(typeof(GUI));
             window.title = "GAP";
             avatarUsers = new List<avatar>();
+            this.info.account.getInfoAction();
             using (var webClient = new WebClient())
             {
                 imageUserBytes = webClient.DownloadData(info.infoPersonali.avatar_url);

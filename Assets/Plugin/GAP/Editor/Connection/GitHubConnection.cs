@@ -56,6 +56,7 @@ namespace Assets.Plugins.GAP.Connection
                     {
                         ownerT = lista[i + 2].Split('/');
                         PlayerPrefs.SetString("ownerRepository", ownerT[0]);
+                        Debug.Log("OWNER_REPOSITORY: " + ownerT[0]);
                     }
                 }
             } catch (Exception exc)
@@ -125,6 +126,7 @@ namespace Assets.Plugins.GAP.Connection
                 GitHubClient webClient = new GitHubClient(new Octokit.ProductHeaderValue("GAP"));
                 if(!checkValidateInfo())
                 {
+                    this.setOwnerRepository();
                     this.deleteToken(username, password);
                     List<string> scope = new List<string>();
                     scope.Add("repo");
@@ -164,7 +166,7 @@ namespace Assets.Plugins.GAP.Connection
                 webClient.Headers.Add("Authorization", "Token " + PlayerPrefs.GetString("accessToken"));
                 var dp = UnityEngine.Application.dataPath;
                 var s = dp.Split('/');
-                var risultati = webClient.DownloadString("https://api.github.com/repos/" + PlayerPrefs.GetString("username") + "/" + s[s.Length - 2].ToString() + "/collaborators");
+                var risultati = webClient.DownloadString("https://api.github.com/repos/" + PlayerPrefs.GetString("ownerRepository") + "/" + s[s.Length - 2].ToString() + "/collaborators");
                 List<Collaborator> lista = JsonConvert.DeserializeObject<List<Collaborator>>(risultati);
                 ListaCollaboratori listaCollaboratori=new ListaCollaboratori();
                 foreach (var collaboratore in lista)
@@ -172,6 +174,7 @@ namespace Assets.Plugins.GAP.Connection
                     if(collaboratore.login.CompareTo(PlayerPrefs.GetString("username"))!=0)
                         listaCollaboratori.addUser(collaboratore, "Nessuna Azione", "Mai", false);
                 }
+                this.getInfoAction();
                 return listaCollaboratori;
             }
             catch (HttpRequestException e)
