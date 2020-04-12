@@ -251,7 +251,7 @@ namespace Assets.Plugins.GAP.Editor
                                 messaggi.Add(_message[0], _message[1]);
                             }
                         }
-
+                        List<String> listOnline = new List<String>();
                         if (messaggi != null)
                         {
                             if (messaggi.Count > 0)
@@ -271,7 +271,6 @@ namespace Assets.Plugins.GAP.Editor
                                         dtsplit = messaggio.Value.Split('-', ':', '.');
                                     }
                                     var date = DateTime.Now - new DateTime(int.Parse(dtsplit[2]), int.Parse(dtsplit[1]), int.Parse(dtsplit[0]), int.Parse(dtsplit[3]), int.Parse(dtsplit[4]), int.Parse(dtsplit[5]));
-                                    List<String> listOnline = new List<String>();
                                     if (double.Parse(date.TotalDays.ToString()) < 1)
                                     {
                                         if (double.Parse(date.TotalHours.ToString()) < 1)
@@ -288,13 +287,13 @@ namespace Assets.Plugins.GAP.Editor
                                 }
                             }
                         }
+                        kafkaWorker.ReportProgress(0, listOnline);
                     }
                     catch (Exception exc)
                     {
                         this.kafkaOk = false;
                         Debug.Log("Errore consumer: "+exc);
                     }
-                    kafkaWorker.ReportProgress(0, lista);
                 }
                 catch (Exception exc)
                 {
