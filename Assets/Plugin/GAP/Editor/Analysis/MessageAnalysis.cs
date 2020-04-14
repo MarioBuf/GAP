@@ -68,9 +68,6 @@ namespace Assets.Plugins.GAP.Analysis
             int clientId = 0;
 
             string[] details = message.Split('{', '[', '}', '}', ':', '\"');
-            Debug.Log(details);
-
-
             return clientId;
         }
     }

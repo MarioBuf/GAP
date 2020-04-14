@@ -65,10 +65,7 @@
   <ItemGroup>
     <Compile Include="Assets\Plugin\GAP\Editor\Analysis\MessageAnalysis.cs" />
     <Compile Include="Assets\Plugin\GAP\Editor\Connection\Authorizazion.cs" />
-    <Compile Include="Assets\Plugin\GAP\Editor\Connection\GAP_CONSUMER.cs" />
-    <Compile Include="Assets\Plugin\GAP\Editor\Connection\GAP_PRODUCER.cs" />
     <Compile Include="Assets\Plugin\GAP\Editor\Connection\GitHubConnection.cs" />
-    <Compile Include="Assets\Plugin\GAP\Editor\Exceptions\UsernameException.cs" />
     <Compile Include="Assets\Plugin\GAP\Editor\GUI.cs" />
     <Compile Include="Assets\Plugin\GAP\Editor\KafkaConnectionConfiguration.cs" />
     <Compile Include="Assets\Plugin\GAP\Editor\Login.cs" />
@@ -81,7 +78,7 @@
     <Compile Include="Assets\Plugin\GAP\Editor\Users\ListaCollaboratori.cs" />
     <Compile Include="Assets\Plugin\GAP\Editor\Users\Lista_info.cs" />
     <Compile Include="Assets\Plugin\GAP\Editor\Users\Repository.cs" />
-    <Compile Include="Assets\Plugin\GAP\Editor\Users\_info.cs" />
+    <Compile Include="Assets\Plugin\GAP\Editor\Users\basicInfo.cs" />
     <Compile Include="Assets\Plugin\GAP\Editor\Users\imgn.cs" />
     <Compile Include="Assets\Plugin\GAP\Editor\messageAlert.cs" />
     <Reference Include="UnityEditor.TestRunner">

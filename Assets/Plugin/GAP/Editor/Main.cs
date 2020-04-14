@@ -22,7 +22,6 @@ namespace Assets.Plugins.GAP.Editor
     public class Main
     {
         GUI window;
-        GAP_CONSUMER consumer;
         Info info;
 
         [MenuItem("Window/GAP")]
@@ -42,7 +41,6 @@ namespace Assets.Plugins.GAP.Editor
             if (this.info.account.checkValidateInfo())
             {
                 this.info.setInfo();
-                this.info.account.getInfoAction();
             }
             else
             {

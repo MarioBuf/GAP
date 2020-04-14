@@ -48,10 +48,7 @@ namespace Assets.Plugins.GAP.Editor
                     GitHubConnection client = new GitHubConnection(username, password);
                 }
                 catch (Exception exc)
-                {
-                    Debug.Log(exc);
-                }
-                Debug.Log(PlayerPrefs.GetString("accessToken"));
+                { }
                 if (PlayerPrefs.GetString("accessToken") != null && PlayerPrefs.GetString("accessToken").CompareTo("") != 0)
                 {
                     messageAlert alert=new messageAlert(this, "Login Effettuato");

@@ -1,21 +1,16 @@
-﻿#pragma warning(push, 0)
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Assets.Plugins.GAP.Editor.Users;
-using Assets.Plugins.GAP.Connection;
 using System.Net;
 using System.Threading;
-using Assets.Plugin.GAP.Editor;
-using Assets.Plugin.GAP.Editor.Users;
-using System.Threading.Tasks;
 using System.ComponentModel;
 using Newtonsoft.Json;
 using KafkaNet.Model;
 using KafkaNet;
 using KafkaNet.Protocol;
-#pragma warning(pop)
+using Assets.Plugin.GAP.Editor.Users;
 
 namespace Assets.Plugins.GAP.Editor
 {
@@ -43,14 +38,11 @@ namespace Assets.Plugins.GAP.Editor
         String username;
 
         //Altro
-        //GAP_CONSUMER consumer;
-        //GAP_PRODUCER producer;
         private bool kafkaOk = false;
         List<String> lista = new List<String>();
         Thread thread;
         bool isAlive = true;
         GUI window;
-
 
         private BackgroundWorker updateInfoWorker;
         private BackgroundWorker kafkaWorker;
@@ -59,7 +51,7 @@ namespace Assets.Plugins.GAP.Editor
         private string ownerRepository;
         private string accessToken;
         private string dataPath;
-        private int kindConnection = 99;
+        private int tipoConnessione = 99;
         private string ipAddress = null;
         private string porta = null;
 
@@ -87,7 +79,7 @@ namespace Assets.Plugins.GAP.Editor
 
             if(PlayerPrefs.HasKey("tipoConnessione"))
             {
-                this.kindConnection = PlayerPrefs.GetInt("tipoConnessione");
+                this.tipoConnessione = PlayerPrefs.GetInt("tipoConnessione");
             }
             this.ipAddress = PlayerPrefs.GetString("ipAddress");
             if(PlayerPrefs.HasKey("porta"))
@@ -102,13 +94,6 @@ namespace Assets.Plugins.GAP.Editor
             GetWindow<GUI>().Show();
         }
 
-        struct temp_info
-        {
-            public string username {get;set;}
-            public string lastActionDone { get; set; }
-            public string whenDidLastActionDone { get; set; }
-        }
-
         public GUI(Info info)
         {
             this.dataPath = UnityEngine.Application.dataPath;
@@ -121,7 +106,6 @@ namespace Assets.Plugins.GAP.Editor
             this.window = (GUI)EditorWindow.GetWindow(typeof(GUI));
             window.title = "GAP";
             avatarUsers = new List<avatar>();
-            this.info.account.getInfoAction();
             using (var webClient = new WebClient())
             {
                 imageUserBytes = webClient.DownloadData(info.infoPersonali.avatar_url);
@@ -139,7 +123,7 @@ namespace Assets.Plugins.GAP.Editor
             }
             if (PlayerPrefs.HasKey("tipoConnessione"))
             {
-                this.kindConnection = PlayerPrefs.GetInt("tipoConnessione");
+                this.tipoConnessione = PlayerPrefs.GetInt("tipoConnessione");
             }
             this.ipAddress = PlayerPrefs.GetString("ipAddress");
             this.porta = PlayerPrefs.GetString("porta");
@@ -190,7 +174,7 @@ namespace Assets.Plugins.GAP.Editor
 
         void kafkaWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            if(this.kindConnection!=99)
+            if(this.tipoConnessione!=99)
             {
                 try
                 {
@@ -205,11 +189,11 @@ namespace Assets.Plugins.GAP.Editor
                         webClient.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; " + "Windows NT 5.2; .NET CLR 1.0.3705;)");
 
                         string messaggio = username + "_:_" + data[0] + "-" + data[1] + "-" + data[2] + ":" + data[3] + "." + data[4] + "." + data[5];
-                        if (this.kindConnection == 0)
+                        if (this.tipoConnessione == 0)
                         {
                             webClient.DownloadString(new Uri("http://" + this.ipAddress + "/kafka/producer?message=" + messaggio));
                         }
-                        else if (this.kindConnection == 1)
+                        else if (this.tipoConnessione == 1)
                         {
                             KafkaOptions options = new KafkaOptions();
                             options = new KafkaOptions(new Uri(this.ipAddress + ":" + this.porta));
@@ -223,7 +207,6 @@ namespace Assets.Plugins.GAP.Editor
                     catch (Exception exc)
                     {
                         this.kafkaOk = false;
-                        Debug.Log("Errore producer: " + exc);
                     }
 
                     //Lettura status dal server online
@@ -233,13 +216,13 @@ namespace Assets.Plugins.GAP.Editor
                         string risultati = null;
                         Dictionary<String, String> messaggi = new Dictionary<string, string>();
                         //Caso di default
-                        if (this.kindConnection == 0)
+                        if (this.tipoConnessione == 0)
                         {
                             webClient.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; " + "Windows NT 5.2; .NET CLR 1.0.3705;)");
                             risultati = webClient.DownloadString(new Uri("http://" + this.ipAddress + "/kafka/consumer"));
                             messaggi = JsonConvert.DeserializeObject<Dictionary<String, String>>(risultati);
                         }
-                        else if (this.kindConnection == 1)
+                        else if (this.tipoConnessione == 1)
                         {
                             KafkaOptions options = new KafkaOptions();
                             options = new KafkaOptions(new Uri(this.ipAddress + ":" + this.porta));
@@ -260,7 +243,7 @@ namespace Assets.Plugins.GAP.Editor
                                 {
                                     String[] message = null;
                                     String[] dtsplit = null;
-                                    if (this.kindConnection == 1)
+                                    if (this.tipoConnessione == 1)
                                     {
                                         string[] separatingStrings = { "_:_" };
                                         message = messaggio.Value.Split(separatingStrings, StringSplitOptions.RemoveEmptyEntries);
@@ -292,12 +275,10 @@ namespace Assets.Plugins.GAP.Editor
                     catch (Exception exc)
                     {
                         this.kafkaOk = false;
-                        Debug.Log("Errore consumer: "+exc);
                     }
                 }
                 catch (Exception exc)
                 {
-                    Debug.Log("Errore: " + exc.Message);
                     this.kafkaOk = false;
                 }
             }
@@ -316,14 +297,16 @@ namespace Assets.Plugins.GAP.Editor
             }
         }
 
+
+
         void updateInfoWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            List<temp_info> eventi = new List<temp_info>();
-            List<temp_info> listaUtenti = new List<temp_info>();
+            List<basicInfo> eventi = new List<basicInfo>();
+            List<basicInfo> listaUtenti = new List<basicInfo>();
             List<String> usersChecked = new List<string>();
             WebClient webClient = new WebClient();
 
-            temp_info info_1 = new temp_info();
+            basicInfo info_1 = new basicInfo();
             try
             {
                 webClient.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; " + "Windows NT 5.2; .NET CLR 1.0.3705;)");
@@ -336,7 +319,7 @@ namespace Assets.Plugins.GAP.Editor
                 string[] separatingStrings = { "[{\"", "\":\"", "\",\"", ",\"", "\",\"", "}}]", "}},{", "\":", "\":{\"", ",\"", "\"", "}", "]" };
                 string[] details = risultati.Split(separatingStrings, StringSplitOptions.RemoveEmptyEntries);
 
-                info_1 = new temp_info();
+                info_1 = new basicInfo();
                 bool check = false;
                 for (int i = 0; i < details.Length - 1; i++)
                 {
@@ -368,7 +351,7 @@ namespace Assets.Plugins.GAP.Editor
                             eventi.Add(info_1);
                             usersChecked.Add(info_1.username);
                         }
-                        info_1 = new temp_info();
+                        info_1 = new basicInfo();
                     }
                 }
                 foreach (var evento in eventi)
@@ -377,7 +360,7 @@ namespace Assets.Plugins.GAP.Editor
                     string[] dataEvento = evento.whenDidLastActionDone.Split(chars, StringSplitOptions.None);
                     string[] dataAttuale = DateTime.Now.ToString().Split(chars, StringSplitOptions.None);
 
-                    double number = 0; //for check days, hour or minutes from last action
+                    double number = 0;
                     var date = DateTime.UtcNow - new DateTime(int.Parse(dataEvento[0]), int.Parse(dataEvento[1]), int.Parse(dataEvento[2]), int.Parse(dataEvento[3]), int.Parse(dataEvento[4]), int.Parse(dataEvento[5]));
                     string whenDidLastAction = null;
                     if (double.Parse(date.TotalDays.ToString()) >= 1)
@@ -424,7 +407,7 @@ namespace Assets.Plugins.GAP.Editor
                     if (evento.username.CompareTo(this.username) != 0)
                     {
 
-                        temp_info inform = new temp_info();
+                        basicInfo inform = new basicInfo();
                         inform.username = evento.username;
                         inform.lastActionDone = lastActionDone;
                         inform.whenDidLastActionDone = whenDidLastAction;
@@ -433,17 +416,14 @@ namespace Assets.Plugins.GAP.Editor
                 }
             }
             catch (Exception exc)
-            {
-                Debug.Log("\nException Caught!");
-                Debug.Log("Message :{0} " + exc.Message.ToString());
-            }
+            { }
 
             updateInfoWorker.ReportProgress(0, listaUtenti);
         }
 
         void updateInfoWorker_progressChanged(object sender, ProgressChangedEventArgs e)
         {
-            List<temp_info> lista = (List < temp_info > )e.UserState;
+            List<basicInfo> lista = (List <basicInfo>)e.UserState;
             foreach(var item in lista)
             {
                 this.info.collaborators.updateUser(item.username, item.lastActionDone, item.whenDidLastActionDone);
@@ -614,16 +594,6 @@ namespace Assets.Plugins.GAP.Editor
         public void updateUser(string username, string lastActionDone, string whenDidLastAction)
         {
             this.info.collaborators.updateUser(username, lastActionDone, whenDidLastAction);
-        }
-
-        public InfoUser getUser(string username)
-        {
-            return this.info.collaborators.getUser(username);
-        }
-
-        public Info getList()
-        {
-            return this.info;
         }
 
         void Update()

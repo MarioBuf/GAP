@@ -9,11 +9,11 @@ namespace Assets.Plugin.GAP.Editor.Users
 {
     public class Lista_info : ScriptableObject
     {
-        public List<_info> lista_info { get; set; }
+        public List<basicInfo> listaInfo { get; set; }
 
         public Lista_info()
         {
-            this.lista_info = new List<_info>();
+            this.listaInfo = new List<basicInfo>();
         }
     }
 }

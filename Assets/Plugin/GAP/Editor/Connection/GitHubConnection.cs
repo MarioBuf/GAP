@@ -59,9 +59,7 @@ namespace Assets.Plugins.GAP.Connection
                     }
                 }
             } catch (Exception exc)
-            {
-                Debug.Log("ERRORE");
-            }
+            { }
         }
 
         public void deleteToken(String username, String password)
@@ -151,9 +149,7 @@ namespace Assets.Plugins.GAP.Connection
                 }
             }
             catch (Exception exc)
-            {
-                Debug.Log("setAccessToken"+exc);
-            }
+            { }
         }
 
         public ListaCollaboratori getInfoCollaboratorsRepository()
@@ -173,23 +169,17 @@ namespace Assets.Plugins.GAP.Connection
                     if(collaboratore.login.CompareTo(PlayerPrefs.GetString("username"))!=0)
                         listaCollaboratori.addUser(collaboratore, "Nessuna Azione", "Mai", false);
                 }
-                this.getInfoAction();
                 return listaCollaboratori;
             }
             catch (HttpRequestException e)
             {
-                Debug.Log("\nException Caught!");
-                Debug.Log("Message :{0} " + e.Message.ToString());
                 return null;
             }
             catch (Exception exc)
             {
-                Debug.Log("\nException Caught!");
-                Debug.Log("Message :{0} " + exc.Message.ToString());
                 return null;
             }
         }
-
         public Lista_info getInfoAction()
         {
             List<Event> eventi;
@@ -209,72 +199,72 @@ namespace Assets.Plugins.GAP.Connection
                 foreach (var evento in eventi)
                 {
                     check = false;
-                    for (int i=0; i<listaUtenti.lista_info.Count; ++i)
+                    for (int i = 0; i < listaUtenti.listaInfo.Count; ++i)
                     {
-                        if (listaUtenti.lista_info[i].username.CompareTo(evento.actor.login) == 0)
+                        if (listaUtenti.listaInfo[i].username.CompareTo(evento.actor.login) == 0)
                         {
                             check = true;
                         }
                     }
                     if (!check)
                     {
-                        char[] chars = { '-', 'T', ':', 'Z'};
+                        char[] chars = { '-', 'T', ':', 'Z' };
                         string[] dataEvento = evento.created_at.Split(chars, StringSplitOptions.None);
-                        //Debug.Log(dataEvento[0] + "\n" + dataEvento[1] + "\n" + dataEvento[2] + "\n" + dataEvento[3] + "\n" + dataEvento[4] + "\n" + dataEvento[5]);
                         string[] dataAttuale = DateTime.Now.ToString().Split(chars, StringSplitOptions.None);
-                        double number=0; //for check days, hour or minutes from last action
+                        double number = 0;
                         var date = DateTime.UtcNow - new DateTime(int.Parse(dataEvento[0]), int.Parse(dataEvento[1]), int.Parse(dataEvento[2]), int.Parse(dataEvento[3]), int.Parse(dataEvento[4]), int.Parse(dataEvento[5]));
                         string whenDidLastAction = null;
-                        //Debug.Log("Giorni: " + date.TotalDays + "\nOre: " + date.TotalHours + "\nMinuti: " + date.TotalMinutes);
                         if (double.Parse(date.TotalDays.ToString()) >= 1)
                         {
                             //number = double.Parse(date.TotalDays.ToString());
                             number = Math.Round(double.Parse(date.TotalDays.ToString()), MidpointRounding.ToEven);
-                            if(number>1)
+                            if (number > 1)
                                 whenDidLastAction = number.ToString() + " giorni fa";
                             else
                                 whenDidLastAction = number.ToString() + " giorno fa";
-                        } else
+                        }
+                        else
                         {
-                            if(double.Parse(date.TotalHours.ToString()) >= 1)
+                            if (double.Parse(date.TotalHours.ToString()) >= 1)
                             {
                                 number = Math.Round(double.Parse(date.TotalHours.ToString()), MidpointRounding.ToEven);
-                                if(number==1)
+                                if (number == 1)
                                     whenDidLastAction = number.ToString() + " ora fa";
                                 else
                                     whenDidLastAction = number.ToString() + " ore fa";
-                            } else
+                            }
+                            else
                             {
                                 number = Math.Round(double.Parse(date.TotalMinutes.ToString()), MidpointRounding.ToEven);
-                                if(number==1)
+                                if (number == 1)
                                     whenDidLastAction = number.ToString() + " minuto fa";
                                 else
                                     whenDidLastAction = number.ToString() + " minuti fa";
                             }
                         }
                         string lastActionDone = null;
-                        if (evento.payload.commits!=null)
+                        if (evento.payload.commits != null)
                         {
                             if (evento.payload.commits[0].message != null && evento.payload.commits[0].message.CompareTo("") != 0)
                             {
                                 lastActionDone = evento.payload.commits[0].message;
                             }
-                        } else
+                        }
+                        else
                         {
                             lastActionDone = evento.type;
                         }
-                        _info info=new _info();
+                        basicInfo info = new basicInfo();
                         info.username = evento.actor.login;
-                        info.whenDidLastAction = whenDidLastAction;
+                        info.whenDidLastActionDone = whenDidLastAction;
                         info.lastActionDone = lastActionDone;
-                        listaUtenti.lista_info.Add(info);
+                        listaUtenti.listaInfo.Add(info);
                     }
                 }
                 return listaUtenti;
-            } catch(Exception exc)
+            }
+            catch (Exception exc)
             {
-                Debug.Log("\nException Caught!");
-                Debug.Log("Message :{0} " + exc.Message.ToString());
                 return null;
             }
         }
@@ -295,14 +285,10 @@ namespace Assets.Plugins.GAP.Connection
             }
             catch (HttpRequestException e)
             {
-                Debug.Log("\nException Caught!");
-                Debug.Log("Message :{0} " + e.Message.ToString());
                 return null;
             }
             catch (Exception exc)
             {
-                Debug.Log("\nException Caught!");
-                Debug.Log("Message :{0} " + exc.Message.ToString());
                 return null;
             }
         }

@@ -1,11 +1,6 @@
-﻿using Assets.Plugin.GAP.Editor.Users;
-using Assets.Plugins.GAP.Connection;
-using Assets.Plugins.GAP.Editor.Connection;
+﻿using Assets.Plugins.GAP.Connection;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using static Assets.Plugins.GAP.Connection.GitHubConnection;
 
@@ -39,13 +34,13 @@ namespace Assets.Plugins.GAP.Editor.Users
                     else
                         control = false;
                     var infoActions = this.account.getInfoAction();
-                    foreach (var infoA in infoActions.lista_info)
+                    foreach (var infoA in infoActions.listaInfo)
                     {
                         foreach(var collaboratore in this.collaborators.listaCollaboratori)
                         {
                             if(collaboratore.user.login.CompareTo(infoA.username) == 0)
                             {
-                                this.collaborators.updateUser(infoA.username, infoA.lastActionDone, infoA.whenDidLastAction);
+                                this.collaborators.updateUser(infoA.username, infoA.lastActionDone, infoA.whenDidLastActionDone);
                             }
                         }
                     }
@@ -59,16 +54,14 @@ namespace Assets.Plugins.GAP.Editor.Users
 
         public void updateInfoCollaborators()
         {
-            Lista_info listaInfo = new Lista_info();
-            listaInfo = this.account.getInfoAction();
+            var listaInfo = this.account.getInfoAction();
             for (int i=0; i<collaborators.numberCollaborators(); ++i)
             {
-                for (int y=0; y<listaInfo.lista_info.Count; ++y)
+                for (int y=0; y<listaInfo.listaInfo.Count; ++y)
                 {
-                    if (collaborators.getUserByIndex(i).user.login.CompareTo(listaInfo.lista_info[y].username)==0)
+                    if (collaborators.getUserByIndex(i).user.login.CompareTo(listaInfo.listaInfo[y].username)==0)
                     {
-                        //InfoUser infoUser = new InfoUser(collaborators.getUserByIndex(i).user, elemento.lastActionDone, elemento.whenDidLastAction, item.status);
-                        collaborators.updateUser(listaInfo.lista_info[y].username, listaInfo.lista_info[y].lastActionDone, listaInfo.lista_info[y].whenDidLastAction);
+                        collaborators.updateUser(listaInfo.listaInfo[y].username, listaInfo.listaInfo[y].lastActionDone, listaInfo.listaInfo[y].whenDidLastActionDone);
                     }
                 }
             }

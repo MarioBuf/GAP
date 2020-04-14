@@ -47,8 +47,6 @@ namespace Assets.Plugins.GAP.Editor
             index = EditorGUILayout.Popup(index, new string[] { "Kafka-Connect", "Connessione diretta" });
             if (GUILayout.Button("Connetti"))
             {
-
-                Debug.Log(index);
                 if (ipAddress.Equals(""))
                 {
                     new messageAlert(null, "IpAddress/Hostname mancante");
