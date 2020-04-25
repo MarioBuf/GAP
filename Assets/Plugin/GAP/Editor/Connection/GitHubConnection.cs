@@ -76,9 +76,9 @@ namespace Assets.Plugins.GAP.Connection
                 {
                     if (item.app._name.CompareTo("GAP") == 0)
                     {
-                        GitHubClient n = new GitHubClient(new ProductHeaderValue("GAP"));
-                        n.Credentials = new Credentials(username, password);
-                        var task=n.Authorization.Delete(item.id);
+                        GitHubClient gitClient = new GitHubClient(new ProductHeaderValue("GAP"));
+                        gitClient.Credentials = new Credentials(username, password);
+                        var task=gitClient.Authorization.Delete(item.id);
                     }
                 }
             }

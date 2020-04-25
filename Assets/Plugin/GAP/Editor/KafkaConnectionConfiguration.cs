@@ -18,7 +18,7 @@ namespace Assets.Plugins.GAP.Editor
         public KafkaConnectionConfiguration()
         {
             KafkaConnectionConfiguration window=GetWindow<KafkaConnectionConfiguration>();
-            window.title = "Configurazione Connessione";
+            window.title = "Connection Setting";
             window.Show();
         }
 
@@ -34,25 +34,25 @@ namespace Assets.Plugins.GAP.Editor
         void OnGUI()
         {
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Indirizzo IP/Hostname:");
+            EditorGUILayout.LabelField("IP Address/Hostname:");
             ipAddress = EditorGUILayout.TextArea(ipAddress);
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Porta:");
+            EditorGUILayout.LabelField("Port:");
             port = EditorGUILayout.TextArea(port);
             EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.LabelField("Scegli il tipo di connessione con Apache Kafka:");
-            index = EditorGUILayout.Popup(index, new string[] { "Kafka-Connect", "Connessione diretta" });
-            if (GUILayout.Button("Connetti"))
+            EditorGUILayout.LabelField("Choose type of connection to Apache Kafka:");
+            index = EditorGUILayout.Popup(index, new string[] { "Kafka-Connect", "Direct Connection" });
+            if (GUILayout.Button("Connect"))
             {
                 if (ipAddress.Equals(""))
                 {
-                    new messageAlert(null, "IpAddress/Hostname mancante");
+                    new messageAlert(null, "Miss IpAddress/Hostname");
                 } else if(port.Equals("") && index==1)
                 {
-                    new messageAlert(null, "Porta mancante");
+                    new messageAlert(null, "Miss Port");
                 } else
                 {
                     PlayerPrefs.SetInt("tipoConnessione", index);

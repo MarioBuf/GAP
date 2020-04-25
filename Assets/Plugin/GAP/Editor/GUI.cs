@@ -367,9 +367,9 @@ namespace Assets.Plugins.GAP.Editor
                     {
                         number = Math.Round(double.Parse(date.TotalDays.ToString()), MidpointRounding.ToEven);
                         if (number > 1)
-                            whenDidLastAction = number.ToString() + " giorni fa";
+                            whenDidLastAction = number.ToString() + " days ago";
                         else
-                            whenDidLastAction = number.ToString() + " giorno fa";
+                            whenDidLastAction = number.ToString() + " day ago";
                     }
                     else
                     {
@@ -377,9 +377,9 @@ namespace Assets.Plugins.GAP.Editor
                         {
                             number = Math.Round(double.Parse(date.TotalHours.ToString()), MidpointRounding.ToEven);
                             if (number == 1)
-                                whenDidLastAction = number.ToString() + " ora fa";
+                                whenDidLastAction = number.ToString() + " hour ago";
                             else
-                                whenDidLastAction = number.ToString() + " ore fa";
+                                whenDidLastAction = number.ToString() + " hours ago";
                         }
                         else
                         {
@@ -388,12 +388,12 @@ namespace Assets.Plugins.GAP.Editor
                             {
                                 number = Math.Round(double.Parse(date.TotalSeconds.ToString()), MidpointRounding.ToEven);
                                 if (number <= 10)
-                                    whenDidLastAction = "Adesso";
+                                    whenDidLastAction = "Now";
                                 else
-                                    whenDidLastAction = "Poco fa";
+                                    whenDidLastAction = "A little while ago";
                             }
                             else
-                                whenDidLastAction = number.ToString() + " minuti fa";
+                                whenDidLastAction = number.ToString() + " minutes ago";
                         }
                     }
                     string lastActionDone = null;
@@ -445,12 +445,12 @@ namespace Assets.Plugins.GAP.Editor
             GUILayout.Box(textureLogin, GUILayout.Height(50), GUILayout.Width(50));
             GUILayout.BeginVertical();
             GUILayout.Label("");
-            GUILayout.Label("Benvenuto "+ this.info.infoPersonali.login);
+            GUILayout.Label("Welcome "+ this.info.infoPersonali.login);
             GUILayout.EndVertical();
             if (this.kafkaOk)
-                GUILayout.Label("Stato Server Kafka: Connesso");
+                GUILayout.Label("Kafka Server Status: Connected");
             else
-                GUILayout.Label("Stato Server Kafka: Problemi con il server");
+                GUILayout.Label("Kafka Server Status: Problems with the server");
             GUILayout.EndHorizontal();
             GUILayout.Space(5);
             foldoutOnline = EditorGUILayout.Foldout(foldoutOnline, "Online", foldoutOnlineControl);

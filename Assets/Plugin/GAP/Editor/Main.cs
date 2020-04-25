@@ -54,7 +54,7 @@ namespace Assets.Plugins.GAP.Editor
                     window = new GUI(this.info);
                 } else
                 {
-                    new messageAlert(null, "E' necessario configurare la connessione ad Apache Kafka");
+                    new messageAlert(null, "It's necessary configure connection to Apache Kafka");
                     new KafkaConnectionConfiguration();
                 }
             } else
