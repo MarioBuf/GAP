@@ -49,10 +49,10 @@ namespace Assets.Plugins.GAP.Editor
             {
                 if (ipAddress.Equals(""))
                 {
-                    new messageAlert(null, "Miss IpAddress/Hostname");
+                    new messageAlert(null, "Miss IpAddress/Hostname", null);
                 } else if(port.Equals("") && index==1)
                 {
-                    new messageAlert(null, "Miss Port");
+                    new messageAlert(null, "Miss Port", null);
                 } else
                 {
                     PlayerPrefs.SetInt("tipoConnessione", index);

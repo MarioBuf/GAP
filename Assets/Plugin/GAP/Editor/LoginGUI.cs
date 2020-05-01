@@ -51,11 +51,11 @@ namespace Assets.Plugins.GAP.Editor
                 { }
                 if (PlayerPrefs.GetString("accessToken") != null && PlayerPrefs.GetString("accessToken").CompareTo("") != 0)
                 {
-                    messageAlert alert=new messageAlert(this, "Login Ok");
+                    messageAlert alert=new messageAlert(this, "Login Success", "Login Success");
                     this.Close();
                 } else
                 {
-                    messageAlert alert = new messageAlert(null, "Credentials not valids");
+                    messageAlert alert = new messageAlert(null, "Credentials not valids", null);
                 }
             }
         }

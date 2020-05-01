@@ -111,14 +111,17 @@ namespace Assets.Plugins.GAP.Editor
                 imageUserBytes = webClient.DownloadData(info.infoPersonali.avatar_url);
                 textureLogin = new Texture2D(10, 10);
                 textureLogin.LoadImage(imageUserBytes);
-                for (int i=0; i<info.collaborators.numberCollaborators(); ++i)
+                if(info.collaborators != null)
                 {
-                    avatar Av = new avatar();
-                    Av.username = info.collaborators.getUserByIndex(i).user.login;
-                    Av.avatarUser = webClient.DownloadData(info.collaborators.getUserByIndex(i).user.avatar_url);
-                    Av.textureAvatar = new Texture2D(8, 8);
-                    Av.textureAvatar.LoadImage(Av.avatarUser);
-                    avatarUsers.Add(Av);
+                    for (int i = 0; i < info.collaborators.numberCollaborators(); ++i)
+                    {
+                        avatar Av = new avatar();
+                        Av.username = info.collaborators.getUserByIndex(i).user.login;
+                        Av.avatarUser = webClient.DownloadData(info.collaborators.getUserByIndex(i).user.avatar_url);
+                        Av.textureAvatar = new Texture2D(8, 8);
+                        Av.textureAvatar.LoadImage(Av.avatarUser);
+                        avatarUsers.Add(Av);
+                    }
                 }
             }
             if (PlayerPrefs.HasKey("tipoConnessione"))
@@ -461,17 +464,26 @@ namespace Assets.Plugins.GAP.Editor
                     GUILayout.BeginHorizontal();
                     GUILayout.BeginVertical();
                     GUILayout.Label("");
-                    for (int i = 0; i < this.info.collaborators.listaCollaboratori.Count; ++i)
+                    if(this.info.collaborators!=null)
                     {
-                        avatar a = new avatar();
-                        for (int y = 0; y < this.avatarUsers.Count; y++)
+                        if(this.info.collaborators.listaCollaboratori.Count>0)
                         {
-                            if (info.collaborators.getUserByIndex(i).status)
+                            for (int i = 0; i < this.info.collaborators.listaCollaboratori.Count; ++i)
                             {
-                                if (avatarUsers.ToArray()[y].username.CompareTo(info.collaborators.getUserByIndex(i).user.login) == 0)
+                                avatar a = new avatar();
+                                if (this.avatarUsers != null)
                                 {
-                                    a = avatarUsers.ToArray()[y];
-                                    GUILayout.Box(a.textureAvatar, GUILayout.Height(38), GUILayout.Width(38));
+                                    for (int y = 0; y < this.avatarUsers.Count; y++)
+                                    {
+                                        if (info.collaborators.getUserByIndex(i).status)
+                                        {
+                                            if (avatarUsers.ToArray()[y].username.CompareTo(info.collaborators.getUserByIndex(i).user.login) == 0)
+                                            {
+                                                a = avatarUsers.ToArray()[y];
+                                                GUILayout.Box(a.textureAvatar, GUILayout.Height(38), GUILayout.Width(38));
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -479,28 +491,41 @@ namespace Assets.Plugins.GAP.Editor
                     GUILayout.EndVertical();
                     GUILayout.BeginVertical();
                     GUILayout.Label("Username");
-                    for (int i = 0; i < this.info.collaborators.listaCollaboratori.Count; ++i)
+                    if (this.info.collaborators != null)
                     {
-                        if (info.collaborators.getUserByIndex(i).status)
+                        if (this.info.collaborators.listaCollaboratori.Count > 0)
                         {
-                            GUILayout.Label(info.collaborators.getUserByIndex(i).user.login);
-                            GUILayout.Space(25);
+                            for (int i = 0; i < this.info.collaborators.listaCollaboratori.Count; ++i)
+                            {
+                                if (info.collaborators.getUserByIndex(i).status)
+                                {
+                                    GUILayout.Label(info.collaborators.getUserByIndex(i).user.login);
+                                    GUILayout.Space(25);
+                                }
+                            }
                         }
                     }
                     GUILayout.EndVertical();
                     GUILayout.BeginVertical();
                     GUILayout.Label("Last Action");
-                    for (int i = 0; i < this.info.collaborators.listaCollaboratori.Count; ++i)
+                    if (this.info.collaborators != null)
                     {
-                        if (info.collaborators.getUserByIndex(i).status)
+                        if (this.info.collaborators.listaCollaboratori.Count > 0)
                         {
-                            GUILayout.Label(info.collaborators.getUserByIndex(i).lastActionDone);
-                            GUILayout.Space(25);
+                            for (int i = 0; i < this.info.collaborators.listaCollaboratori.Count; ++i)
+                            {
+                                if (info.collaborators.getUserByIndex(i).status)
+                                {
+                                    GUILayout.Label(info.collaborators.getUserByIndex(i).lastActionDone);
+                                    GUILayout.Space(25);
+                                }
+                            }
                         }
                     }
                     GUILayout.EndVertical();
                     GUILayout.BeginVertical();
                     GUILayout.Label("When is done");
+
                     for (int i = 0; i < this.info.collaborators.listaCollaboratori.Count; ++i)
                     {
                         if (info.collaborators.getUserByIndex(i).status)
@@ -527,17 +552,26 @@ namespace Assets.Plugins.GAP.Editor
                     GUILayout.BeginHorizontal();
                     GUILayout.BeginVertical();
                     GUILayout.Label("");
-                    for (int i = 0; i < this.info.collaborators.listaCollaboratori.Count; ++i)
+                    if (this.info.collaborators != null)
                     {
-                        avatar a = new avatar();
-                        for (int y = 0; y < this.avatarUsers.Count; y++)
+                        if (this.info.collaborators.listaCollaboratori.Count > 0)
                         {
-                            if (!info.collaborators.getUserByIndex(i).status)
+                            for (int i = 0; i < this.info.collaborators.listaCollaboratori.Count; ++i)
                             {
-                                if (avatarUsers.ToArray()[y].username.CompareTo(info.collaborators.getUserByIndex(i).user.login) == 0)
+                                avatar a = new avatar();
+                                if (this.avatarUsers != null)
                                 {
-                                    a = avatarUsers.ToArray()[y];
-                                    GUILayout.Box(a.textureAvatar, GUILayout.Height(38), GUILayout.Width(38));
+                                    for (int y = 0; y < this.avatarUsers.Count; y++)
+                                    {
+                                        if (!info.collaborators.getUserByIndex(i).status)
+                                        {
+                                            if (avatarUsers.ToArray()[y].username.CompareTo(info.collaborators.getUserByIndex(i).user.login) == 0)
+                                            {
+                                                a = avatarUsers.ToArray()[y];
+                                                GUILayout.Box(a.textureAvatar, GUILayout.Height(38), GUILayout.Width(38));
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -545,28 +579,41 @@ namespace Assets.Plugins.GAP.Editor
                     GUILayout.EndVertical();
                     GUILayout.BeginVertical();
                     GUILayout.Label("Username");
-                    for (int i = 0; i < this.info.collaborators.listaCollaboratori.Count; ++i)
+                    if (this.info.collaborators.listaCollaboratori != null)
                     {
-                        if (!info.collaborators.getUserByIndex(i).status)
+                        if (this.info.collaborators.listaCollaboratori.Count > 0)
                         {
-                            GUILayout.Label(info.collaborators.getUserByIndex(i).user.login);
-                            GUILayout.Space(25);
+                            for (int i = 0; i < this.info.collaborators.listaCollaboratori.Count; ++i)
+                            {
+                                if (!info.collaborators.getUserByIndex(i).status)
+                                {
+                                    GUILayout.Label(info.collaborators.getUserByIndex(i).user.login);
+                                    GUILayout.Space(25);
+                                }
+                            }
                         }
                     }
                     GUILayout.EndVertical();
                     GUILayout.BeginVertical();
                     GUILayout.Label("Last Action");
-                    for (int i = 0; i < this.info.collaborators.listaCollaboratori.Count; ++i)
+                    if (this.info.collaborators != null)
                     {
-                        if (!info.collaborators.getUserByIndex(i).status)
+                        if (this.info.collaborators.listaCollaboratori.Count > 0)
                         {
-                            GUILayout.Label(info.collaborators.getUserByIndex(i).lastActionDone);
-                            GUILayout.Space(25);
+                            for (int i = 0; i < this.info.collaborators.listaCollaboratori.Count; ++i)
+                            {
+                                if (!info.collaborators.getUserByIndex(i).status)
+                                {
+                                    GUILayout.Label(info.collaborators.getUserByIndex(i).lastActionDone);
+                                    GUILayout.Space(25);
+                                }
+                            }
                         }
                     }
                     GUILayout.EndVertical();
                     GUILayout.BeginVertical();
                     GUILayout.Label("When is done");
+
                     for (int i = 0; i < this.info.collaborators.listaCollaboratori.Count; ++i)
                     {
                         if (!info.collaborators.getUserByIndex(i).status)

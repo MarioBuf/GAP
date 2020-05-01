@@ -12,12 +12,15 @@ namespace Assets.Plugin.GAP.Editor
     {
         private string message;
         private EditorWindow gui;
-        public messageAlert(EditorWindow gui, string message)
+        public messageAlert(EditorWindow gui, string message, string title)
         {
             this.gui = gui;
             this.message = message;
             messageAlert window = GetWindow<messageAlert>();
-            window.title = "Errore";
+            if (title == null)
+                window.title = "Errore";
+            else
+                window.title = title;
             window.Show();
         }
         public static void Init()
